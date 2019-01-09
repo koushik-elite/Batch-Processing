@@ -1,0 +1,157 @@
+2999
+29987
+RNN(
+  (embedding): Embedding(2440, 650)
+  (lstm): LSTM(650, 650, num_layers=3, batch_first=True, dropout=0.5)
+  (dropout): Dropout(p=0.5)
+  (fc): Linear(in_features=650, out_features=2440, bias=True)
+  (sig): Sigmoid()
+)
+Training for 5 epoch(s)...
+epoch  1
+Epoch:    1/5     Loss: 7.801772117614746
+
+Epoch:    1/5     Loss: 7.704202651977539
+
+Epoch:    1/5     Loss: 7.671632607777913
+
+Epoch:    1/5     Loss: 7.680330276489258
+
+Epoch:    1/5     Loss: 7.7055908203125
+
+Epoch:    1/5     Loss: 7.705741087595622
+
+Epoch:    1/5     Loss: 7.7201442037309915
+
+Epoch:    1/5     Loss: 7.705964088439941
+
+Epoch:    1/5     Loss: 7.706030633714464
+
+Epoch:    1/5     Loss: 7.686104822158813
+
+Epoch:    1/5     Loss: 7.697068257765337
+
+Epoch:    1/5     Loss: 7.6978653271993
+
+Epoch:    1/5     Loss: 7.683165880349966
+
+Epoch:    1/5     Loss: 7.67769421849932
+
+Epoch:    1/5     Loss: 7.6662854512532554
+
+Epoch:    1/5     Loss: 7.662548393011093
+
+Epoch:    1/5     Loss: 7.6592592632069305
+
+Epoch:    1/5     Loss: 7.661887248357137
+
+Epoch:    1/5     Loss: 7.653715961857846
+
+Epoch:    1/5     Loss: 7.656358337402343
+
+Epoch:    1/5     Loss: 7.653990473066058
+
+Epoch:    1/5     Loss: 7.656383319334551
+
+Epoch:    1/5     Loss: 7.645524605460789
+
+Epoch:    1/5     Loss: 7.6397316455841064
+
+Epoch:    1/5     Loss: 7.6384077072143555
+
+Epoch:    1/5     Loss: 7.633331372187688
+
+Epoch:    1/5     Loss: 7.636046250661214
+
+Epoch:    1/5     Loss: 7.631426862307957
+
+Epoch:    1/5     Loss: 7.6271236189480485
+
+Epoch:    1/5     Loss: 7.62977393468221
+
+Epoch:    1/5     Loss: 7.625799379041118
+
+Epoch:    1/5     Loss: 7.622068867087364
+
+Epoch:    1/5     Loss: 7.6155383803627705
+
+Epoch:    1/5     Loss: 7.621152639389038
+
+Epoch:    1/5     Loss: 7.623592935289655
+
+Epoch:    1/5     Loss: 7.625901553365919
+
+Epoch:    1/5     Loss: 7.630786186939961
+
+Epoch:    1/5     Loss: 7.635410057870965
+
+Epoch:    1/5     Loss: 7.63467218937018
+
+Epoch:    1/5     Loss: 7.63897294998169
+
+Epoch:    1/5     Loss: 7.635740024287526
+
+Epoch:    1/5     Loss: 7.635043655123029
+
+Epoch:    1/5     Loss: 7.63437969740047
+
+Epoch:    1/5     Loss: 7.63601862300526
+
+Epoch:    1/5     Loss: 7.633144950866699
+
+Epoch:    1/5     Loss: 7.632567094719929
+
+Epoch:    1/5     Loss: 7.636270604235061
+
+Epoch:    1/5     Loss: 7.635650227467219
+
+Epoch:    1/5     Loss: 7.633017218842799
+
+Epoch:    1/5     Loss: 7.634492330551147
+
+Epoch:    1/5     Loss: 7.63198392531451
+
+Epoch:    1/5     Loss: 7.633415433076712
+
+Epoch:    1/5     Loss: 7.632904808476286
+
+Epoch:    1/5     Loss: 7.63611940101341
+
+Epoch:    1/5     Loss: 7.628310559012673
+
+Epoch:    1/5     Loss: 7.627918456281934
+
+Epoch:    1/5     Loss: 7.625788178360253
+
+Epoch:    1/5     Loss: 7.623736184218834
+
+Epoch:    1/5     Loss: 7.620057655593096
+
+Epoch:    1/5     Loss: 7.621497082710266
+
+Epoch:    1/5     Loss: 7.621252255361588
+
+Epoch:    1/5     Loss: 7.622628235047864
+
+Epoch:    1/5     Loss: 7.622372112576923
+
+Epoch:    1/5     Loss: 7.6205636858940125
+
+Epoch:    1/5     Loss: 7.618808746337891
+
+Epoch:    1/5     Loss: 7.618626377799294
+
+Epoch:    1/5     Loss: 7.616950647154851
+
+Epoch:    1/5     Loss: 7.618268475813024
+
+Epoch:    1/5     Loss: 7.618098825648211
+
+Epoch:    1/5     Loss: 7.620789173671177
+
+Epoch:    1/5     Loss: 7.616365419307225
+
+Epoch:    1/5     Loss: 7.614841355217828
+
+Epoch:    1/5     Loss: 7.611986303982669
+
