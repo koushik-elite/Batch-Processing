@@ -6,6 +6,7 @@ from string import punctuation
 import torch
 import os
 import torch.nn as nn
+import torch.nn.functional as F
 
 data_dir = './data/Seinfeld_Scripts.txt'
 data_dir_1 = './data/corpus_banda.txt'
@@ -231,6 +232,8 @@ class RNN(nn.Module):
         self.n_layers = n_layers
         self.hidden_dim = hidden_dim
         self.vocab_size = vocab_size
+        self.embedding_dim = embedding_dim
+        self.window_length = sequence_length
         
         # define model layers
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
@@ -242,7 +245,7 @@ class RNN(nn.Module):
         # linear and sigmoid layers
         self.fc = nn.Linear(hidden_dim, output_size)
         # self.fc1 = nn.Linear(128, output_size)
-        self.sig = nn.Sigmoid()
+        self.sig = nn.Softmax(dim=0)
         # self.hidden = self.init_hidden()
         self.init_weights()
 
@@ -267,18 +270,23 @@ class RNN(nn.Module):
         batch_size = nn_input.size(0)
 
         # embeddings and lstm_out
-        embeds = self.embedding(nn_input)
-        lstm_out, hidden = self.lstm(embeds, hidden)
+        embeds = self.dropout(self.embedding(nn_input))
+
+        # print(embeds.shape)
+        # print(embeds.view(len(nn_input), self.window_length, -1).shape)
+        
+        lstm_out, hidden = self.lstm(embeds.view(len(nn_input), self.window_length, -1), hidden)
   
         # stack up lstm outputs
+        lstm_out = self.dropout(lstm_out)
         lstm_out = lstm_out.contiguous().view(-1, self.hidden_dim)
         out = self.dropout(lstm_out)
         out = self.fc(out)
         # out = self.fc1(out)
         
         # sigmoid function
-        sig_out = self.sig(out)
-        # sig_out = out
+        # sig_out = self.sig(out)
+        sig_out = out
 
         # print(sig_out.shape)
         
@@ -289,6 +297,8 @@ class RNN(nn.Module):
         # print(sig_out.size())
         # print(sig_out.size())
         # sig_out = sig_out[:,-1] # get last batch of labels
+
+        sig_out = F.log_softmax(sig_out, dim=1)
 
         # return one batch of output word scores and the hidden state
         return sig_out, hidden    
@@ -303,7 +313,7 @@ class RNN(nn.Module):
         
         # initialize hidden state with zero weights, and move to GPU if available
         
-        weight = next(self.parameters())
+        weight = next(self.parameters()).data
         
         hidden = (weight.new(self.n_layers, batch_size, self.hidden_dim).zero_(),
         weight.new(self.n_layers, batch_size, self.hidden_dim).zero_())
@@ -341,7 +351,7 @@ def train_rnn(rnn, batch_size, optimizer, criterion, n_epochs, show_every_n_batc
             loss.backward()
             # optimizer.zero_grad()
             # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
-            nn.utils.clip_grad_norm_(rnn.parameters(),  0.25)
+            nn.utils.clip_grad_norm_(rnn.parameters(),  5)
             for p in rnn.parameters():
                 p.data.add_(-learning_rate, p.grad.data)
 
@@ -358,7 +368,7 @@ def train_rnn(rnn, batch_size, optimizer, criterion, n_epochs, show_every_n_batc
                 # batch_losses = []
     # returns a trained rnn
     return rnn
-    
+
 
 SPECIAL_WORDS = {'PADDING': '<PAD>'}
 text = load_data(data_dir)
@@ -380,16 +390,16 @@ int_text_text = int_text
 # print(vocab_to_int)
 
 num_epochs = 5
-learning_rate = 20
+learning_rate = 0.01
 vocab_size = len(vocab_to_int) + 1
 output_size = len(vocab_to_int) + 1
-embedding_dim = 650
-hidden_dim = 650
+embedding_dim = 750
+hidden_dim = 300
 n_layers = 2
 show_every_n_batches = 1000
 
-sequence_length = 100
-batch_size = 10
+sequence_length = 140
+batch_size = 200
 
 rnn = RNN(vocab_size, output_size, embedding_dim, hidden_dim, n_layers, dropout=0.5)
 
