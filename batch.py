@@ -213,6 +213,11 @@ def batch_data_final(words, sequence_length, batch_size):
     # print(data_loader.dataset)
     return data_loader
 
+def save_model(filename, decoder):
+    save_filename = os.path.splitext(os.path.basename(filename))[0] + '.pt'
+    torch.save(decoder, save_filename)
+
+
 class RNN(nn.Module):
     
     def __init__(self, vocab_size, output_size, embedding_dim, hidden_dim, n_layers, dropout=0.5):
@@ -245,7 +250,7 @@ class RNN(nn.Module):
         # linear and sigmoid layers
         self.fc = nn.Linear(hidden_dim, output_size)
         # self.fc1 = nn.Linear(128, output_size)
-        self.sig = nn.Softmax(dim=0)
+        self.sig = nn.Softmax(dim=1)
         # self.hidden = self.init_hidden()
         self.init_weights()
 
@@ -312,16 +317,22 @@ class RNN(nn.Module):
         # Implement function
         
         # initialize hidden state with zero weights, and move to GPU if available
-        
+
         weight = next(self.parameters()).data
         
-        hidden = (weight.new(self.n_layers, batch_size, self.hidden_dim).zero_(),
-        weight.new(self.n_layers, batch_size, self.hidden_dim).zero_())
+        if (train_on_gpu):
+            hidden = (weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().cuda(),
+                      weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().cuda())
+        else:
+            hidden = (weight.new(self.n_layers, batch_size, self.hidden_dim).zero_(),
+                      weight.new(self.n_layers, batch_size, self.hidden_dim).zero_())
         
         return hidden
 
 def train_rnn(rnn, batch_size, optimizer, criterion, n_epochs, show_every_n_batches):
     batch_losses = []
+
+    previousLoss = np.Inf
     
     rnn.train()
 
@@ -332,13 +343,16 @@ def train_rnn(rnn, batch_size, optimizer, criterion, n_epochs, show_every_n_batc
         # initialize hidden state
         hidden = rnn.init_hidden(batch_size)
         print("epoch ",epoch_i)
-        batch_losses = []
         for batch_i, (inputs, labels) in enumerate(t_loader, 1):
             n_batches = len(t_loader.dataset) // batch_size
             if(batch_i > n_batches):
                 break
             
             # hidden = tuple([each.data for each in hidden])
+
+            if(train_on_gpu):
+                inputs, labels = inputs.cuda(), labels.cuda()
+
             hidden = repackage_hidden(hidden)
             rnn.zero_grad()
             try:
@@ -359,17 +373,28 @@ def train_rnn(rnn, batch_size, optimizer, criterion, n_epochs, show_every_n_batc
 
             for p in rnn.parameters():
                 p.data.add_(-learning_rate, p.grad.data)
+
             batch_losses.append(loss.item())
             # printing loss stats
-            print('Epoch: {:>4}/{:<4}  Loss: {}\n'.format(epoch_i, n_epochs, np.average(batch_losses)))
-
+            if batch_i % show_every_n_batches == 0:
+                average_loss = np.average(batch_losses)
+                print('Epoch: {:>4}/{:<4}  Loss: {}\n'.format(epoch_i, n_epochs, average_loss))
+                if average_loss <= previousLoss:
+                    previousLoss = average_loss
+                    save_model('./save/trained_rnn_temp', trained_rnn)            
+                    batch_losses = []
+                    print('Model Trained and Saved')
+            
             # if batch_i % show_every_n_batches == 0:
                 # print('Epoch: {:>4}/{:<4}  Loss: {}\n'.format(epoch_i, n_epochs, np.average(batch_losses)))
                 # batch_losses = []
     # returns a trained rnn
     return rnn
 
-
+train_on_gpu = torch.cuda.is_available()
+if not train_on_gpu:
+    print('No GPU found. Please use a GPU to train your neural network.')
+    
 SPECIAL_WORDS = {'PADDING': '<PAD>'}
 text = load_data(data_dir)
 text = text[81:]
@@ -410,16 +435,17 @@ print(rnn)
 
 # test_text = range(892110)
 t_loader = batch_data_final(int_text_text, sequence_length, batch_size)
+print("totla-batch-size ",len(t_loader.dataset))
 trained_rnn = train_rnn(rnn, batch_size, optimizer, criterion, num_epochs, show_every_n_batches)
 # t_loader = test_getitem_1d(test_text,10)
 print("----------------------------------------------------------------------------------")
-print(len(t_loader.dataset))
-for batch_i, (inputs, labels) in enumerate(t_loader, 1):
-    print("----inputs----",batch_i)
+# print(len(t_loader.dataset))
+# for batch_i, (inputs, labels) in enumerate(t_loader, 1):
+    # print("----inputs----",batch_i)
     # inputs = inputs.flatten()
-    print(inputs)
+    # print(inputs)
     # labels = labels.flatten()
-    print(labels)
+    # print(labels)
     # print(labels.shape)
 
 # data_iter = iter(t_loader)
