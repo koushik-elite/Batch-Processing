@@ -2,6 +2,7 @@
 
 # compiled output
 /data
+/env
 
 # System Files
 .DS_Store
